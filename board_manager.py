@@ -1,12 +1,13 @@
 class Board:
-    def __init__(self, h=5, w=8):
+    def __init__(self, h=5, w=8, index={}):
         self.colors = {-1: "⚫", 0: "🔴", 1: "🟡", 2: "🔵", 3: "🟢"}
         # self.colors = {-1:'⚫',1:'🔴',2:'🔵','🔴':'🟡','🔵':'🟢'}
         self.height = h
         self.width = w
-        boardIndex = {}
-        for i in range(self.width * self.height):
-            boardIndex.update({i: {"color": -1, "moveNumber": -1}})
+        if len(index) < 1:
+            boardIndex = {}
+            for i in range(self.width * self.height):
+                boardIndex.update({i: {"color": -1, "moveNumber": -1}})
         self.index = boardIndex
         # these define the relative positions of necessary pieces to connect lines
         self.diag1 = [
@@ -35,6 +36,7 @@ class Board:
         width = self.width
         height = self.height
         print("0\t| ", end="")
+        print(self.index)
         for key in self.index.keys():
             piece = self.colors[self.index[key]["color"]]
             print(piece + " | ", end="")
@@ -43,35 +45,33 @@ class Board:
 
     def is_connect4(self, player, target):  # checks if move results in a connect 4
         target = int(target)
-        print(target)
+        print(f"{player=}, {target=}")
         self.printLineBreak(
             text=f"Checking if occupying {target} led to connect4", prefix=True
         )
         l = self.width
         h = self.height
-        board = self.index
+        self.index
 
         sequence = []
-
         self.printLineBreak(text="Checking Diagonals", prefix=True)
-
+        self.printLineBreak(text="checking diagonal 1")
         for i in self.diag1:
             if 0 <= i + target < (self.height * self.width) - 1:
-                if board[target + i]["color"] == player:
-
+                if self.index[target + i]["color"] == player:
+                    print("verif", target + i, self.index[target + i])
                     sequence.append(i + target)
                 else:
-
                     sequence = []
-                    print(f"line 53: {sequence=}")
                 if len(sequence) == 4:
                     if self.locate_col(sequence):
-
                         return 1, sequence, self.index
+
+        self.printLineBreak(text="checking diagonal 1")
         sequence = []
         for i in self.diag2:
             if 0 <= i + target < (self.width * self.height):
-                if board[target + i]["color"] == player:
+                if self.index[target + i]["color"] == player:
                     sequence.append(i + target)
                 if len(sequence) == 4:
                     sequence.reverse()
@@ -83,30 +83,38 @@ class Board:
         self.printLineBreak(text="Checking Laterals", prefix=True)
         sequence = []
         self.printLineBreak(text="checking vertical")
+        print(self.vertical)
         for i in self.vertical:
             if 0 <= i + target < (self.height * self.width):
-                if board[target + i]["color"] == player:
+                if self.index[target + i]["color"] == player:
                     sequence.append(i + target)
-                if len(sequence) == 4:
-                    return 1, sequence, self.index
-
+                    if len(sequence) == 4:
+                        print(f"CONNECT 4 {player=} {sequence=}")
+                        return 1, sequence, self.index
+                else:
+                    sequence = []
         sequence = []
         self.printLineBreak(text="checking horizontal")
         for i in self.horizontal:
-            print(f"{target=},{target+i=}")
-            if target + i < self.width * self.height and target + i >= 0:
-                if board[target + i]["color"] == player:
-                    sequence.append(i + target)
-                if len(sequence) == 4:
-                    fa = self.check_spillover(sequence, direction="horizontal")
-                    if fa:
-                        return 1, sequence, self.index
+            if 0 <= target + i < self.width * self.height:
+                if self.index[target + i]["color"] == player:
+                    sequence.append(target + i)
+
+                    if len(sequence) == 4:
+                        print(sequence)
+                        fa = self.check_spillover(sequence, direction="horizontal")
+                        if fa:
+                            return 1, sequence, self.index
+                        else:
+                            sequence = []
                     else:
                         sequence = []
                 else:
                     sequence = []
-            # if (i*(i%self.width   ))<=i+target<(i+1)*(i%self.width   ):
-            return 0, self.index
+
+        sequence = []
+        # if (i*(i%self.width   ))<=i+target<(i+1)*(i%self.width   ):
+        return 0, None, self.index
 
     def update_open_spaces(self):
         open_spaces = self.spaces
