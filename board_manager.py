@@ -136,7 +136,6 @@ class Board:
         return 0, self.index
 
     def is_target_legal(self, player, desiredMove):
-
         #        if not self.lastMove:
         #            print("this is the first turn")
         if self.lastMove != None:

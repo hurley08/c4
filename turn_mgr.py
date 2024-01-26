@@ -111,7 +111,6 @@ class Turns:
         return self.take_move(self.currentPlayer, choice)
 
     def move(self, player, choice):
-
         self.board[choice]["color"] = self.currentPlayer
         self.board[choice]["occupied"] = True
         self.board[choice]["moveNumber"] = self.currentTurn
@@ -133,7 +132,6 @@ class Turns:
             return True
 
         try:
-
             # draw_board(self.board)
             self.printLineBreak(text=f"This turn is over", dbl_space=True)
             # print(f"turnKey: {self.turnKey} lastTurn: {self.lastTurn} currentTurn: {self.currentTurn} mextTurn: {self.nextTurn} lastMove: {self.lastMove}")
