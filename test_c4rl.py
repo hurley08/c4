@@ -5,16 +5,8 @@ from _c4rl import ConnectFourRL, split_wins, return_stats
 
 
 @pytest.fixture
-def test_play_n_vary_smarts(n=50, sm0=None, sm1=None):
-    game = ConnectFourRL(rows=6, cols=8, p1_smart=sm0, p2_smart=sm1, test=False)
-    game_log = {}
-    for i in range(n + 1)[1:]:
-        game_log[i] = game.play_game()
-    return game_log
-
-
-@pytest.fixture
 def game_obj():
+    # Instantiates a ConnectFourRL object and returns it
     from _c4rl import ConnectFourRL
 
     game = ConnectFourRL(rows=6, cols=8, p1_smart=True, p2_smart=False, test=False)
@@ -23,27 +15,15 @@ def game_obj():
 
 @pytest.fixture
 def Connect():
+    # Import RL ConnectFour class as fixture
     from _c4rl import ConnectFourRL
 
     return ConnectFourRL
 
 
-@pytest.fixture
-def winner():
-    from _c4rl import split_wins, return_stats
-
-    return split_wins
-
-
-@pytest.fixture
-def compare():
-    from _c4rl import compare_wins, return_stats
-
-    return compare_wins
-
-
-@pytest.fixture
+# @pytest.fixture
 def test_get_state():
+    # Test get_state method executes without issue
     game = ConnectFourRL(rows=6, cols=7)
     state = game.get_state()
 
@@ -54,6 +34,7 @@ def test_get_state():
 
 
 def test_play_single_game():
+    # Play through a single game
     from _c4rl import ConnectFourRL as Connect
 
     game_obj = Connect(
@@ -66,6 +47,7 @@ def test_play_single_game():
 
 
 def test_split_win(winner):
+    # Test split_win function executes without issue
     from _c4rl import ConnectFourRL as Connect
 
     game_obj = Connect(
@@ -78,6 +60,7 @@ def test_split_win(winner):
 
 
 def test_compare_wins(winner):
+    # test compare_wins function executes with no error
     from _c4rl import ConnectFourRL as Connect
 
     game_obj = Connect(
@@ -98,6 +81,7 @@ def test_compare_wins(winner):
     [(True, False), (False, False), (False, True), (True, True)],
 )
 def test_smarts_sweep(Connect, compare, winner, sm0, sm1, ns):
+    # Play n games and verify results follow expected trends
     try:
         game_log = {}
         for i in range(ns + 1)[1:]:
