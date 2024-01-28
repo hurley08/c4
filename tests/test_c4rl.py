@@ -112,9 +112,9 @@ def test_smarts_sweep(Connect, compare, winner, sm0, sm1, ns):
         f"p1_smart: {sm0} | p2_smart: {sm1} | N: {ns} | {results[0]} | {results[1]} | {results[2]}"
     )
     if sm0 == True and sm1 == False:
-        assert "Player 2" in results[0]
-    if sm0 == False and sm1 == True:
         assert "Player 1" in results[0]
+    if sm0 == False and sm1 == True:
+        assert "Player 2" in results[0]
     if sm0 == sm1:
         assert 25 < float(results[2].split(" ")[1].replace("%", "")) < 80
 
