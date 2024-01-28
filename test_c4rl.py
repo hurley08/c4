@@ -83,11 +83,11 @@ def test_compare_wins(winner):
     game_obj = Connect(
         rows=8, cols=10, p1_smart=False, p2_smart=False, print_it=False, test=False
     )
-    from _c4rl import compare_wins
+    from _c4rl import compare_wins, split_wins
 
     game_log = {}
     game_log[1] = game_obj.play_game()
-    split = winner(game_log)
+    split = split_wins(game_log)
     res = compare_wins(split[0], split[1])
     assert res
 
