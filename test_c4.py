@@ -35,13 +35,21 @@ def test_drop_piece_invalid_1(game_6x7):
     )  # Should return False for a column that is already full
 
 
-@pytest.mark.xfail
 def test_drop_piece_invalid_2(game_6x7):
     game = game_6x7
     assert not game.drop_piece(
         8
     )  # Should return False for a column that is already full
 
+def game_15x15():
+    # Test if engine can make a big board
+    from _c4 import ConnectFour
+    assert ConnectFour(rows=15, cols=15, tests=True)
+
+def game_30x30():
+    # Test if engine can make an even bigger board
+    from _c4 import ConnectFour
+    assert ConnectFour(rows=30, cols=30, tests=True)
 
 def test_is_full(game_6x7):
     game = game_6x7
@@ -80,6 +88,7 @@ def test_no_winner(game_6x7):
 
 
 def test_switch_player(game_6x7):
+    # Test switch player method is functional
     game = game_6x7
     assert game.current_player == 1
     game.switch_player()
