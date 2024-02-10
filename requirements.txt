@@ -4,3 +4,5 @@ pytest
 numpy
 pandas
 matplotlib
+serialtools
+pyfirmata

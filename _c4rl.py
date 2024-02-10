@@ -1,8 +1,10 @@
 import numpy as np
 import random
 import time
+
 from qLearningAgent import QLearningAgent
 from _c4 import ConnectFour
+from display import LED_Matrix
 
 
 class ConnectFourRL(ConnectFour):
@@ -16,9 +18,13 @@ class ConnectFourRL(ConnectFour):
         print_game=False,
         test=False,
         debug=False,
-        wait=0,
+        display=False,
+        wait=4,
+        COM=None,
+        BAUD=None,
     ):
         super().__init__(rows, cols, test)
+        self.COM = COM
         self.p1_smart = p1_smart
         self.p2_smart = p2_smart
         self.debug = debug
@@ -33,6 +39,14 @@ class ConnectFourRL(ConnectFour):
         self.wait = wait
         self.move = 1
         self.winner = False
+        self.COM = COM
+        self.BAUD = BAUD
+        self.display = display
+        if self.display:
+            self.matrix = LED_Matrix(
+                port=self.COM, baudrate=9600, rows=self.rows, cols=self.cols
+            )
+            self.display = True
 
         # print(f"{self.rows=} {self.cols=} {self.p1_smart=} {self.p2_smart=} {self.wait=}")
 
@@ -78,7 +92,10 @@ class ConnectFourRL(ConnectFour):
                     col = self.agent2.choose_action(self.get_state())
                 # print(f"Debug 33, {self.move=}, {col=},{self.current_player=}")
                 if (0 <= col < self.cols) and self.drop_piece(col):
-                    time.sleep(self.wait)
+                    if self.display:
+                        bit_board = self.matrix.to_bitmap(self.board)
+                        self.matrix.output_to_serial(self.rows, self.cols, bit_board)
+                        time.sleep(self.wait + 0.5)
                     self.move += 1
                     if self.print_game:
                         print("\n\n\n\n")
@@ -188,6 +205,26 @@ def compare_wins(p1_wins, p2_wins):
         p1_moves_min_max,
         p2_moves_min_max,
     )
+    if len(p1_wins) > 0:
+        p1_moves_min_max = (max(p1_wins.values()), min(p1_wins.values()))
+    else:
+        p1_moves_min_max = (0, 0)
+    if len(p2_wins) > 0:
+        p2_moves_min_max = (max(p2_wins.values()), min(p2_wins.values()))
+    else:
+        p2_moves_min_max = (0, 0)
+    mean_p1_moves_win = sum(p1_wins.values()) // num_p1_wins if num_p1_wins > 0 else 0
+    mean_p2_moves_win = sum(p2_wins.values()) // num_p2_wins if num_p2_wins > 0 else 0
+    winner_margin = f"{max(num_tup)/sum(num_tup)*100:.2f}%" if sum(num_tup) > 0 else 0
+    return return_stats(
+        num_p1_wins,
+        num_p2_wins,
+        mean_p1_moves_win,
+        mean_p2_moves_win,
+        winner_margin,
+        p1_moves_min_max,
+        p2_moves_min_max,
+    )
 
 
 """
@@ -220,12 +257,17 @@ if __name__ == "__main__":
     for sm in smarts:
         for i in range(n + 1)[1:]:
             game = ConnectFourRL(
-                rows=6,
-                cols=8,
+                rows=8,
+                cols=12,
+                COM="/dev/ttyACM0",
+                BAUD=9600,
+                display=False,
                 p1_smart=sm[0],
                 p2_smart=sm[1],
                 test=False,
                 print_it=False,
+                print_game=False,
+                wait=4,
             )
 
             # game = ConnectFourRL(
